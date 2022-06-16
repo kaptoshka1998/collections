@@ -9,44 +9,45 @@ public class EmployeeService {
 
     private static final int Limit = 10;
 
-    public final List<Employee> employees = new ArrayList<>();
+    public final Map<String, Employee> employees = new HashMap<>();
+
+    private String getKey(Employee employee) {
+        return employee.getFirstName() + " " + employee.getSecondName();
+    }
 
     public Employee add(String firstName, String secondName) {
         Employee employee = new Employee(firstName, secondName);
-        if (employees.contains(employee)) {
+        if (employees.containsKey(getKey(employee))) {
             throw new EmployeeAlreadyAddedException();
         }
         if (employees.size() < Limit) {
-            employees.add(employee);
+            employees.put(getKey(employee), employee);
             return employee;
         }
             throw new EmployeeStorageIsFullException();
     }
     public Employee remove(String firstName, String secondName) {
         Employee employee = new Employee(firstName, secondName);
-        if (!employees.contains(employee)) {
+        String employeeKey = getKey(employee);
+        if (!employees.containsKey(employeeKey)) {
             throw new EmployeeNotFoundException();
         }
-        employees.remove(employee);
+        employees.remove(employeeKey);
         return employee;
     }
 
     public Employee find(String firstName, String secondName) {
         Employee employee = new Employee(firstName, secondName);
-        if (!employees.contains(employee)) {
+        String employeeKey = getKey(employee);
+        if (!employees.containsKey(employeeKey)) {
             throw new EmployeeNotFoundException();
-        }
-        for (Employee value : employees) {
-            if (Objects.equals(value, employee)) {
-                return employee;
-            }
         }
         throw new EmployeeNotFoundException();
     }
 
     public List<Employee> getAll() {
         List<Employee> result = new ArrayList<>(employees.size());
-        return new ArrayList<>(employees);
+        return new ArrayList<>(employees.values());
     }
 
 }
